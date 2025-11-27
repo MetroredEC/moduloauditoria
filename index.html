@@ -3,109 +3,210 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auditoría Médica Web</title>
-  <!-- Basic styling -->
+  <title>Auditoría Médica Metrored</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Auditoría Médica Web</h1>
-    <nav>
-      <ul>
-        <li><a href="#dashboard" id="nav-dashboard">Dashboard</a></li>
-        <li><a href="#criteria" id="nav-criteria">Criterios</a></li>
-        <li><a href="#audit" id="nav-audit">Auditar</a></li>
-        <li><a href="#admin" id="nav-admin">Admin</a></li>
-      </ul>
-    </nav>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo-mark" aria-hidden="true">M</div>
+      <div class="brand-text">
+        <p class="eyebrow">Auditoría clínica</p>
+        <h1>Metrored Quality Suite</h1>
+      </div>
+    </div>
+    <div class="session">
+      <label for="roleSelect">Rol activo</label>
+      <select id="roleSelect">
+        <option value="auditor">Auditor</option>
+        <option value="controller">Controller</option>
+        <option value="admin">Admin</option>
+      </select>
+      <span class="badge" id="roleBadge">auditor</span>
+    </div>
   </header>
+
+  <nav class="main-nav">
+    <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
+    <a href="#audit" data-section="audit">Auditoría</a>
+    <a href="#medicos" data-section="medicos">Médicos</a>
+    <a href="#admin" data-section="admin">Admin</a>
+  </nav>
+
   <main>
-    <!-- Dashboard Section -->
-    <section id="dashboard" class="section">
-      <h2>Dashboard</h2>
-      <div class="metrics">
-        <div class="metric">
-          <h3>Total de atenciones</h3>
-          <p id="totalRecords">—</p>
+    <section id="dashboard" class="panel visible">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Visión ejecutiva</p>
+          <h2>Dashboard con KPIs</h2>
         </div>
-        <div class="metric">
-          <h3>Especialidades únicas</h3>
-          <p id="uniqueSpecialties">—</p>
+        <div class="kpi-legend">
+          <span class="dot ok"></span> Óptimo
+          <span class="dot warn"></span> Aceptable
+          <span class="dot alert"></span> No aceptable
         </div>
-        <div class="metric">
-          <h3>Centros médicos únicos</h3>
-          <p id="uniqueCenters">—</p>
+      </header>
+      <div class="grid kpis" id="kpiGrid"></div>
+      <div class="grid charts">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Indicadores clínicos</p>
+              <h3>Cumplimiento por especialidad</h3>
+            </div>
+          </div>
+          <canvas id="chartEspecialidad"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Evolución</p>
+              <h3>Score global Metrored</h3>
+            </div>
+          </div>
+          <canvas id="chartEvolucion"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Rendimiento médico</p>
+              <h3>Radar de desempeño</h3>
+            </div>
+          </div>
+          <canvas id="chartRadar"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Operativo</p>
+              <h3>Reconsulta 7 días</h3>
+            </div>
+          </div>
+          <canvas id="chartReconsulta"></canvas>
         </div>
       </div>
-      <h3>Distribución por especialidad</h3>
-      <table id="specialtyTable">
-        <thead>
-          <tr><th>Especialidad</th><th>Cantidad</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <h3>Distribución por centro médico</h3>
-      <table id="centerTable">
-        <thead>
-          <tr><th>Centro Médico</th><th>Cantidad</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-    <!-- Criteria Section -->
-    <section id="criteria" class="section" style="display:none;">
-      <h2>Criterios de Auditoría</h2>
-      <table id="criteriaTable">
-        <thead>
-          <tr><th>ID</th><th>Nombre</th><th>Descripción</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-    <!-- Audit Section -->
-    <section id="audit" class="section" style="display:none;">
-      <h2>Realizar Auditoría</h2>
-      <div class="form-group">
-        <label for="selectRecord">Seleccione una historia de admisión:</label>
-        <select id="selectRecord"></select>
+      <div class="grid tables">
+        <div class="card">
+          <div class="card-header">
+            <p class="eyebrow">Volúmenes</p>
+            <h3>Distribución por especialidad</h3>
+          </div>
+          <table id="specialtyTable">
+            <thead><tr><th>Especialidad</th><th>Cantidad</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <p class="eyebrow">Volúmenes</p>
+            <h3>Distribución por centro médico</h3>
+          </div>
+          <table id="centerTable">
+            <thead><tr><th>Centro Médico</th><th>Cantidad</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
-      <div id="recordDetails"></div>
-      <form id="auditForm" style="display:none;">
-        <h3>Evaluar Criterios</h3>
-        <div id="criteriaInputs"></div>
+    </section>
+
+    <section id="audit" class="panel">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Flujo profesional</p>
+          <h2>Auditoría Clínica</h2>
+        </div>
+        <div class="status-block">
+          <p class="eyebrow">Semáforo</p>
+          <h3 id="auditScore">—</h3>
+          <span class="pill" id="auditStatus">Sin iniciar</span>
+        </div>
+      </header>
+      <div class="grid audit-layout">
+        <div class="card">
+          <div class="card-header">
+            <p class="eyebrow">Asignaciones</p>
+            <h3>Historias disponibles</h3>
+          </div>
+          <div class="form-group">
+            <label for="selectRecord">Seleccione historia asignada</label>
+            <select id="selectRecord"></select>
+          </div>
+          <div id="recordDetails" class="record-summary"></div>
+        </div>
+        <div class="card audit-form" id="auditFormCard">
+          <div class="card-header">
+            <p class="eyebrow">Secciones</p>
+            <h3>Evaluación por criterios</h3>
+            <div class="progress">
+              <div id="progressBar" class="progress-bar" style="width:0%"></div>
+            </div>
+          </div>
+          <div id="auditForm"></div>
+          <div class="actions">
+            <textarea id="auditComments" rows="3" placeholder="Comentarios / recomendaciones"></textarea>
+            <div class="action-buttons">
+              <button id="saveAuditBtn" class="secondary">Guardar borrador (Autosave)</button>
+              <button id="finalizeAuditBtn" class="primary">Finalizar auditoría</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <p class="eyebrow">Histórico</p>
+          <h3>Auditorías guardadas</h3>
+        </div>
+        <table id="savedAuditsTable">
+          <thead><tr><th>Admisión</th><th>Puntaje</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button id="exportAuditsBtn" class="secondary">Exportar Auditorías (JSON)</button>
+      </div>
+    </section>
+
+    <section id="medicos" class="panel">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Perfil profesional</p>
+          <h2>Médicos y desempeño</h2>
+        </div>
+      </header>
+      <div class="grid" id="medicoGrid"></div>
+    </section>
+
+    <section id="admin" class="panel">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Operaciones</p>
+          <h2>Admin</h2>
+        </div>
+      </header>
+      <div class="card">
+        <div class="card-header">
+          <p class="eyebrow">Carga segura</p>
+          <h3>Fuentes de datos</h3>
+        </div>
+        <p>Cargue nuevos datos de atenciones o criterios en formato JSON. Los datos se almacenan en el navegador.</p>
         <div class="form-group">
-          <label for="auditComments">Comentarios / Recomendaciones:</label><br />
-          <textarea id="auditComments" rows="4" cols="50"></textarea>
+          <label for="uploadArc">Cargar datos de atenciones (arc_data.json)</label>
+          <input type="file" id="uploadArc" accept="application/json" />
         </div>
-        <button type="button" id="saveAuditBtn">Guardar Auditoría</button>
-      </form>
-      <h3>Auditorías Guardadas</h3>
-      <table id="savedAuditsTable">
-        <thead>
-          <!-- Table headings for saved audits: admission ID, computed score (puntaje), date, and available actions -->
-          <tr><th>Admisión</th><th>Puntaje</th><th>Fecha</th><th>Acciones</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button id="exportAuditsBtn" type="button">Exportar Auditorías (JSON)</button>
-    </section>
-    <!-- Admin Section -->
-    <section id="admin" class="section" style="display:none;">
-      <h2>Administración</h2>
-      <p>Puede cargar nuevos datos de atenciones o criterios en formato JSON. Los datos se almacenarán localmente en su navegador.</p>
-      <div class="form-group">
-        <label for="uploadArc">Cargar datos de atenciones (arc_data.json):</label>
-        <input type="file" id="uploadArc" accept="application/json" />
-      </div>
-      <div class="form-group">
-        <label for="uploadCriteria">Cargar criterios (criteria.json):</label>
-        <input type="file" id="uploadCriteria" accept="application/json" />
+        <div class="form-group">
+          <label for="uploadCriteria">Cargar criterios (criteria.json)</label>
+          <input type="file" id="uploadCriteria" accept="application/json" />
+        </div>
       </div>
     </section>
   </main>
-  <footer>
-    <p>© 2025 Auditoría Médica. Proyecto de demostración.</p>
+
+  <footer class="footer">
+    <p>© 2025 Metrored · Auditoría médica con trazabilidad y minimización de datos.</p>
   </footer>
+
   <script src="main.js"></script>
 </body>
 </html>
