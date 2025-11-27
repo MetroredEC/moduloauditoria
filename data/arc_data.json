@@ -1,0 +1,110 @@
+[
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM KENNEDY",
+    "especialidad": "GASTROENTEROLOGIA",
+    "nombre_medico": "KAREN DENISSE FRANCO AGUILAR",
+    "admision": "CEX012-10-002008588",
+    "historia_clinica": 954359279,
+    "nombres_completos": "DAYANA RAFAELA VERGARA ZAMORA"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM KENNEDY",
+    "especialidad": "GASTROENTEROLOGIA",
+    "nombre_medico": "KAREN DENISSE FRANCO AGUILAR",
+    "admision": "CEX012-10-002002905",
+    "historia_clinica": 926529579,
+    "nombres_completos": "VANESSA ELIZABETH SANCHEZ YAGUAL"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM KENNEDY",
+    "especialidad": "GASTROENTEROLOGIA",
+    "nombre_medico": "KAREN DENISSE FRANCO AGUILAR",
+    "admision": "CEX012-10-002004679",
+    "historia_clinica": 923981500,
+    "nombres_completos": "KAREN ALEXANDRA ROSADO GONZALEZ"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM CUMBAYA",
+    "especialidad": "OFTALMOLOGIA",
+    "nombre_medico": "MARIA JOSE IZQUIERDO PALOMEQUE",
+    "admision": "CEX012-10-002004350",
+    "historia_clinica": 1700603721,
+    "nombres_completos": "JOSE RAFAEL ACOSTA USCA"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM CUMBAYA",
+    "especialidad": "OFTALMOLOGIA",
+    "nombre_medico": "MARIA JOSE IZQUIERDO PALOMEQUE",
+    "admision": "CEX012-10-001997766",
+    "historia_clinica": 1711880417,
+    "nombres_completos": "MARIA FERNANDA ALVAREZ SANDOVAL"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM CUMBAYA",
+    "especialidad": "OFTALMOLOGIA",
+    "nombre_medico": "MARIA JOSE IZQUIERDO PALOMEQUE",
+    "admision": "CEX012-10-002004123",
+    "historia_clinica": 1752210862,
+    "nombres_completos": "ESTEBAN SEBASTIAN RIVERA SILVA"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM CUMBAYA",
+    "especialidad": "OFTALMOLOGIA",
+    "nombre_medico": "MARIA JOSE IZQUIERDO PALOMEQUE",
+    "admision": "CEX012-10-002003802",
+    "historia_clinica": 1715438154,
+    "nombres_completos": "LAURA GABRIELA MOLINA BURBANO"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM CUMBAYA",
+    "especialidad": "OFTALMOLOGIA",
+    "nombre_medico": "JOSE ALBERTO GARCES GUEVARA",
+    "admision": "CEX012-10-002002677",
+    "historia_clinica": 1753667839,
+    "nombres_completos": "DOMINIQUE ALEJANDRA AVILA NAZATE"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM CUMBAYA",
+    "especialidad": "OFTALMOLOGIA",
+    "nombre_medico": "JOSE ALBERTO GARCES GUEVARA",
+    "admision": "CEX012-10-002002225",
+    "historia_clinica": 1721683520,
+    "nombres_completos": "MARÍA JOSE CARRERA ALAVA"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM PLAZA DE TOROS",
+    "especialidad": "REUMATOLOGIA",
+    "nombre_medico": "NIVI MARIA GARCIA GARCIA",
+    "admision": "CEX012-10-002003746",
+    "historia_clinica": 1712481637,
+    "nombres_completos": "JORGE ANTONIO AVALOS JACOME"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM PLAZA DE TOROS",
+    "especialidad": "DERMATOLOGIA",
+    "nombre_medico": "ANALIA KARINA PASQUEL SOTELO",
+    "admision": "CEX012-10-002000141",
+    "historia_clinica": 1710060706,
+    "nombres_completos": "ANDRES EDUARDO TORRES FERNANDEZ"
+  },
+  {
+    "fecha_admision": "2025-10-27",
+    "centro_medico": "CM PLAZA DE TOROS",
+    "especialidad": "REUMATOLOGIA",
+    "nombre_medico": "NIVI MARIA GARCIA GARCIA",
+    "admision": "CEX012-10-002008533",
+    "historia_clinica": 1704149739,
+    "nombres_completos": "BEATRIZ MERCEDES TORRES VIZCAINO"
+  }
+]

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "C1",
+    "name": "CENTRO",
+    "description": "Unidad de atención"
+  },
+  {
+    "id": "C2",
+    "name": "ESPECIALIDAD",
+    "description": "Servicio en que se atendió"
+  },
+  {
+    "id": "C3",
+    "name": "FECHA",
+    "description": "Mes"
+  },
+  {
+    "id": "C4",
+    "name": "ADMISION",
+    "description": "Código de admisión"
+  },
+  {
+    "id": "C5",
+    "name": "DATOS",
+    "description": "Se escribe los datos de consulta según la especialidad respectiva"
+  },
+  {
+    "id": "C6",
+    "name": "SIGNOS",
+    "description": "Signos vitales registrados completos y adecuados para la edad"
+  },
+  {
+    "id": "C7",
+    "name": "APP",
+    "description": "Presencia de registro de antecedentes personales relevantes"
+  },
+  {
+    "id": "C8",
+    "name": "APF",
+    "description": "Presencia de registro tanto positivo como negativo de antecedentes familiares relevantes"
+  },
+  {
+    "id": "C9",
+    "name": "ALERGIAS",
+    "description": "Presencia de registro de antecedentes de alergias"
+  },
+  {
+    "id": "C10",
+    "name": "MOTIVO DE CONSULTA",
+    "description": "Registro del motivo por el que el paciente acude a pedir atención médica"
+  },
+  {
+    "id": "C11",
+    "name": "EA",
+    "description": "Descripción de la evolución y detalles de los síntomas y/ o signos descritos en el motivo de consulta y los hallazgos en el interrogatorio, Se incluyen datos positivos y negativos,  Valoración del dolor"
+  },
+  {
+    "id": "C13",
+    "name": "RAS",
+    "description": "Describe signos y síntomas extras al motivo de consulta y forman parte importante en el diagnóstico"
+  },
+  {
+    "id": "C14",
+    "name": "EF",
+    "description": "Descripción clara y especifica de hallazgos en el  examen físico- registro datos negativos importantes para el diagnóstico diferencial"
+  },
+  {
+    "id": "C15",
+    "name": "HISTORIA CONSISTENTE",
+    "description": "Se evalúa la estructura global de la redacción de la historia clínica buscando la consistencia interna entre síntomas y signos explorados con el motivo de consulta presentado"
+  },
+  {
+    "id": "C16",
+    "name": "RIESGO LEGAL",
+    "description": "Se evalúa si la información presente en la historia, en caso de presentarse alguna queja, contenga vacíos que puedan presentar riesgo dejando espacio libre para especulaciones o que no evidencie lo actuado"
+  },
+  {
+    "id": "C17",
+    "name": "DG",
+    "description": "Se analiza la hipótesis diagnostica más probable considerando de manera integral la clínica, los factores de riesgo y la situación del contexto del paciente"
+  },
+  {
+    "id": "C18",
+    "name": "LAB",
+    "description": "Los exámenes prescritos se soportan tanto en evidencia clínica como científica"
+  },
+  {
+    "id": "C19",
+    "name": "IMAGEN / PROCEDIMIENTO",
+    "description": "Los exámenes prescritos se soportan tanto en evidencia clínica como científica"
+  },
+  {
+    "id": "C20",
+    "name": "RP",
+    "description": "La decisión de la prescripción terapéutica es adecuada y esta soportada en evidencia científica"
+  },
+  {
+    "id": "C21",
+    "name": "INDICACIONES COMPLETAS",
+    "description": "Indicaciones completas y claras sin espacios de confusión para el paciente, dosificación, horarios, tiempo de tratamiento"
+  },
+  {
+    "id": "C22",
+    "name": "PRESCRIPCIÓN DE HÁBITOS Y ASESORÍA EN SALUD",
+    "description": "La prescripción cuenta con recomendaciones de hábitos saludables y no farmacológicos, así como aspectos de prevención y promoción de la salud"
+  }
+]

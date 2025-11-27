@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditoría Médica Web</title>
+  <!-- Basic styling -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Auditoría Médica Web</h1>
+    <nav>
+      <ul>
+        <li><a href="#dashboard" id="nav-dashboard">Dashboard</a></li>
+        <li><a href="#criteria" id="nav-criteria">Criterios</a></li>
+        <li><a href="#audit" id="nav-audit">Auditar</a></li>
+        <li><a href="#admin" id="nav-admin">Admin</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section">
+      <h2>Dashboard</h2>
+      <div class="metrics">
+        <div class="metric">
+          <h3>Total de atenciones</h3>
+          <p id="totalRecords">—</p>
+        </div>
+        <div class="metric">
+          <h3>Especialidades únicas</h3>
+          <p id="uniqueSpecialties">—</p>
+        </div>
+        <div class="metric">
+          <h3>Centros médicos únicos</h3>
+          <p id="uniqueCenters">—</p>
+        </div>
+      </div>
+      <h3>Distribución por especialidad</h3>
+      <table id="specialtyTable">
+        <thead>
+          <tr><th>Especialidad</th><th>Cantidad</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <h3>Distribución por centro médico</h3>
+      <table id="centerTable">
+        <thead>
+          <tr><th>Centro Médico</th><th>Cantidad</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <!-- Criteria Section -->
+    <section id="criteria" class="section" style="display:none;">
+      <h2>Criterios de Auditoría</h2>
+      <table id="criteriaTable">
+        <thead>
+          <tr><th>ID</th><th>Nombre</th><th>Descripción</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <!-- Audit Section -->
+    <section id="audit" class="section" style="display:none;">
+      <h2>Realizar Auditoría</h2>
+      <div class="form-group">
+        <label for="selectRecord">Seleccione una historia de admisión:</label>
+        <select id="selectRecord"></select>
+      </div>
+      <div id="recordDetails"></div>
+      <form id="auditForm" style="display:none;">
+        <h3>Evaluar Criterios</h3>
+        <div id="criteriaInputs"></div>
+        <div class="form-group">
+          <label for="auditComments">Comentarios / Recomendaciones:</label><br />
+          <textarea id="auditComments" rows="4" cols="50"></textarea>
+        </div>
+        <button type="button" id="saveAuditBtn">Guardar Auditoría</button>
+      </form>
+      <h3>Auditorías Guardadas</h3>
+      <table id="savedAuditsTable">
+        <thead>
+          <!-- Table headings for saved audits: admission ID, computed score (puntaje), date, and available actions -->
+          <tr><th>Admisión</th><th>Puntaje</th><th>Fecha</th><th>Acciones</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="exportAuditsBtn" type="button">Exportar Auditorías (JSON)</button>
+    </section>
+    <!-- Admin Section -->
+    <section id="admin" class="section" style="display:none;">
+      <h2>Administración</h2>
+      <p>Puede cargar nuevos datos de atenciones o criterios en formato JSON. Los datos se almacenarán localmente en su navegador.</p>
+      <div class="form-group">
+        <label for="uploadArc">Cargar datos de atenciones (arc_data.json):</label>
+        <input type="file" id="uploadArc" accept="application/json" />
+      </div>
+      <div class="form-group">
+        <label for="uploadCriteria">Cargar criterios (criteria.json):</label>
+        <input type="file" id="uploadCriteria" accept="application/json" />
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>© 2025 Auditoría Médica. Proyecto de demostración.</p>
+  </footer>
+  <script src="main.js"></script>
+</body>
+</html>
