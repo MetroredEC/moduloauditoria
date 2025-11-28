@@ -3,109 +3,466 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auditoría Médica Web</title>
-  <!-- Basic styling -->
+  <title>Auditoría Médica Metrored</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    (() => {
+      try {
+        const session = localStorage.getItem('metroredSession');
+        if (!session) {
+          window.location.href = 'login.html';
+        }
+      } catch (e) {
+        window.location.href = 'login.html';
+      }
+    })();
+  </script>
 </head>
 <body>
-  <header>
-    <h1>Auditoría Médica Web</h1>
-    <nav>
-      <ul>
-        <li><a href="#dashboard" id="nav-dashboard">Dashboard</a></li>
-        <li><a href="#criteria" id="nav-criteria">Criterios</a></li>
-        <li><a href="#audit" id="nav-audit">Auditar</a></li>
-        <li><a href="#admin" id="nav-admin">Admin</a></li>
-      </ul>
+  <div id="appShell" class="">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-mark" aria-hidden="true">M</div>
+        <div class="brand-text">
+          <p class="eyebrow">Auditoría clínica</p>
+          <h1>Metrored Quality Suite</h1>
+        </div>
+      </div>
+      <div class="session">
+        <div class="role-display">
+          <label for="roleSelect">Rol activo</label>
+          <select id="roleSelect" disabled>
+            <option value="auditor">Auditor</option>
+            <option value="controller">Controller</option>
+            <option value="admin">Admin</option>
+          </select>
+          <p id="activeUserLabel" class="muted">No autenticado</p>
+          <span class="badge" id="roleBadge">—</span>
+          <button id="logoutBtn" class="text-link">Cerrar sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="main-nav">
+      <a href="#dashboard" data-section="dashboard" class="active">Dashboard</a>
+      <a href="#audit" data-section="audit">Auditoría</a>
+      <a href="#medicos" data-section="medicos">Médicos</a>
+      <a href="#admin" data-section="admin">Admin</a>
     </nav>
-  </header>
-  <main>
-    <!-- Dashboard Section -->
-    <section id="dashboard" class="section">
-      <h2>Dashboard</h2>
-      <div class="metrics">
-        <div class="metric">
-          <h3>Total de atenciones</h3>
-          <p id="totalRecords">—</p>
+
+    <main>
+      <section id="dashboard" class="panel visible">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Visión ejecutiva</p>
+          <h2>Dashboard con KPIs</h2>
         </div>
-        <div class="metric">
-          <h3>Especialidades únicas</h3>
-          <p id="uniqueSpecialties">—</p>
+        <div class="kpi-legend">
+          <span class="dot ok"></span> Óptimo
+          <span class="dot warn"></span> Aceptable
+          <span class="dot alert"></span> No aceptable
         </div>
-        <div class="metric">
-          <h3>Centros médicos únicos</h3>
-          <p id="uniqueCenters">—</p>
+      </header>
+      <div class="grid kpis" id="kpiGrid"></div>
+      <div class="grid charts">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Indicadores clínicos</p>
+              <h3>Cumplimiento por especialidad</h3>
+            </div>
+          </div>
+          <canvas id="chartEspecialidad"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Evolución</p>
+              <h3>Score global Metrored</h3>
+            </div>
+          </div>
+          <canvas id="chartEvolucion"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Rendimiento médico</p>
+              <h3>Radar de desempeño</h3>
+            </div>
+          </div>
+          <canvas id="chartRadar"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Operativo</p>
+              <h3>Reconsulta 7 días</h3>
+            </div>
+          </div>
+          <canvas id="chartReconsulta"></canvas>
         </div>
       </div>
-      <h3>Distribución por especialidad</h3>
-      <table id="specialtyTable">
-        <thead>
-          <tr><th>Especialidad</th><th>Cantidad</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <h3>Distribución por centro médico</h3>
-      <table id="centerTable">
-        <thead>
-          <tr><th>Centro Médico</th><th>Cantidad</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-    <!-- Criteria Section -->
-    <section id="criteria" class="section" style="display:none;">
-      <h2>Criterios de Auditoría</h2>
-      <table id="criteriaTable">
-        <thead>
-          <tr><th>ID</th><th>Nombre</th><th>Descripción</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-    <!-- Audit Section -->
-    <section id="audit" class="section" style="display:none;">
-      <h2>Realizar Auditoría</h2>
-      <div class="form-group">
-        <label for="selectRecord">Seleccione una historia de admisión:</label>
-        <select id="selectRecord"></select>
+      <div class="grid tables">
+        <div class="card">
+          <div class="card-header">
+            <p class="eyebrow">Volúmenes</p>
+            <h3>Distribución por especialidad</h3>
+          </div>
+          <table id="specialtyTable">
+            <thead><tr><th>Especialidad</th><th>Cantidad</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <p class="eyebrow">Volúmenes</p>
+            <h3>Distribución por centro médico</h3>
+          </div>
+          <table id="centerTable">
+            <thead><tr><th>Centro Médico</th><th>Cantidad</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
-      <div id="recordDetails"></div>
-      <form id="auditForm" style="display:none;">
-        <h3>Evaluar Criterios</h3>
-        <div id="criteriaInputs"></div>
+    </section>
+
+    <section id="audit" class="panel">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Flujo profesional</p>
+          <h2>Auditoría Clínica</h2>
+        </div>
+        <div class="status-block">
+          <p class="eyebrow">Semáforo</p>
+          <h3 id="auditScore">—</h3>
+          <span class="pill" id="auditStatus">Sin iniciar</span>
+        </div>
+      </header>
+      <div class="grid audit-layout">
+        <div class="card audit-queue-card full-span">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Gestión</p>
+              <h3>Panel de selección</h3>
+            </div>
+            <div class="assignment-summary" id="auditSummary">
+              <span class="pill" id="auditAssignedChip">Asignadas: 0</span>
+              <span class="pill" id="auditPendingChip">Pendientes: 0</span>
+              <span class="pill" id="auditDoneChip">Auditadas: 0</span>
+            </div>
+          </div>
+          <div class="filter-grid">
+            <div class="form-group">
+              <label for="filterDate">Fecha</label>
+              <input type="date" id="filterDate" />
+            </div>
+            <div class="form-group">
+              <label for="filterCenter">Centro médico</label>
+              <select id="filterCenter"></select>
+            </div>
+            <div class="form-group">
+              <label for="filterCex">CEX / Admisión</label>
+              <input id="filterCex" placeholder="Ej. CEX012-10" />
+            </div>
+          </div>
+          <div class="queue-section single-panel">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">Cola activa</p>
+                <h4>Historias asignadas</h4>
+              </div>
+              <p class="muted">Selecciona una historia y ábrela en el pop up para gestionarla.</p>
+            </div>
+            <div class="table-wrap">
+              <table id="auditQueueTable">
+                <thead>
+                  <tr>
+                    <th>
+                      <div class="th-content">
+                        <span>Fecha</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="fecha_admision" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="fecha_admision" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <span>Centro</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="centro_medico" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="centro_medico" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <span>Especialidad</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="especialidad" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="especialidad" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <span>Médico</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="nombre_medico" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="nombre_medico" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>CEX</th>
+                    <th>
+                      <div class="th-content">
+                        <span>HC</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="historia_clinica" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="historia_clinica" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <span>Paciente</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="nombres_completos" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="nombres_completos" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>
+                      <div class="th-content">
+                        <span>Estado</span>
+                        <div class="sort-actions">
+                          <button class="sort-btn" data-sort-key="estado" data-sort-dir="asc">A→Z</button>
+                          <button class="sort-btn" data-sort-key="estado" data-sort-dir="desc">Z→A</button>
+                        </div>
+                      </div>
+                    </th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="form-group visually-hidden">
+            <label for="selectRecord">Seleccione historia asignada</label>
+            <select id="selectRecord"></select>
+          </div>
+          <div id="recordDetails" class="record-summary visually-hidden"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <p class="eyebrow">Histórico</p>
+          <h3>Auditorías guardadas</h3>
+        </div>
+        <table id="savedAuditsTable">
+          <thead><tr><th>Admisión</th><th>Puntaje</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <button id="exportAuditsBtn" class="secondary">Exportar Auditorías (JSON)</button>
+      </div>
+    </section>
+
+    <section id="medicos" class="panel">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Perfil profesional</p>
+          <h2>Médicos y desempeño</h2>
+        </div>
+      </header>
+      <div class="grid" id="medicoGrid"></div>
+    </section>
+
+    <section id="admin" class="panel">
+      <header class="panel-header">
+        <div>
+          <p class="eyebrow">Operaciones</p>
+          <h2>Admin</h2>
+        </div>
+      </header>
+      <div class="card">
+        <div class="card-header">
+          <p class="eyebrow">Carga segura</p>
+          <h3>Fuentes de datos</h3>
+        </div>
+        <p>Cargue nuevas bases ARC en formato Excel (.xlsx) usando la plantilla de referencia y valide el resultado antes de estratificar.</p>
+        <div class="status-banner info" id="uploadStatus" role="status">Esperando archivo válido de ARC.</div>
         <div class="form-group">
-          <label for="auditComments">Comentarios / Recomendaciones:</label><br />
-          <textarea id="auditComments" rows="4" cols="50"></textarea>
+          <label for="uploadArc">Cargar plantilla ARC completa (Excel)</label>
+          <input type="file" id="uploadArc" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+          <p class="muted">Columnas requeridas: Fecha de admisión, Centro médico, Especialidad, Médico, Admisión/CEX, Historia clínica, Paciente.</p>
+          <div class="inline-actions">
+            <button class="secondary small" id="downloadTemplateBtn" type="button">Descargar plantilla Excel</button>
+            <button class="secondary small" id="recalcStratBtn" type="button">Recalcular muestra</button>
+          </div>
         </div>
-        <button type="button" id="saveAuditBtn">Guardar Auditoría</button>
-      </form>
-      <h3>Auditorías Guardadas</h3>
-      <table id="savedAuditsTable">
-        <thead>
-          <!-- Table headings for saved audits: admission ID, computed score (puntaje), date, and available actions -->
-          <tr><th>Admisión</th><th>Puntaje</th><th>Fecha</th><th>Acciones</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button id="exportAuditsBtn" type="button">Exportar Auditorías (JSON)</button>
-    </section>
-    <!-- Admin Section -->
-    <section id="admin" class="section" style="display:none;">
-      <h2>Administración</h2>
-      <p>Puede cargar nuevos datos de atenciones o criterios en formato JSON. Los datos se almacenarán localmente en su navegador.</p>
-      <div class="form-group">
-        <label for="uploadArc">Cargar datos de atenciones (arc_data.json):</label>
-        <input type="file" id="uploadArc" accept="application/json" />
       </div>
-      <div class="form-group">
-        <label for="uploadCriteria">Cargar criterios (criteria.json):</label>
-        <input type="file" id="uploadCriteria" accept="application/json" />
+
+      <div class="card">
+        <div class="card-header">
+          <p class="eyebrow">Muestra estratificada</p>
+          <h3>Determinación de tamaño y asignación ARC</h3>
+          <button id="recalcStratBtnFooter" class="secondary small">Recalcular</button>
+        </div>
+        <p>Calcula n para población finita (95% confianza, 5% error, p=0.5), estratifica por volúmenes y asigna muestra proporcional garantizando al menos una historia por especialidad.</p>
+        <div class="stat-grid" id="stratSummary">
+          <div class="stat">
+            <p class="eyebrow">Población total</p>
+            <h3 id="stratTotal">—</h3>
+            <span class="muted">Atenciones del mes previo</span>
+          </div>
+          <div class="stat">
+            <p class="eyebrow">Tamaño de muestra (n)</p>
+            <h3 id="stratSample">—</h3>
+            <span class="muted">Fórmula poblaciones finitas</span>
+          </div>
+          <div class="stat">
+            <p class="eyebrow">Especialidades</p>
+            <h3 id="stratEspecialidades">—</h3>
+            <span class="muted">Cobertura</span>
+          </div>
+        </div>
+        <div class="strata-grid" id="strataGrid"></div>
+        <div class="table-wrap">
+          <table id="strataTable">
+            <thead>
+              <tr>
+                <th>Especialidad</th>
+                <th>Estrato</th>
+                <th>Población</th>
+                <th>Muestra asignada</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="muted" id="stratNote"></p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <p class="eyebrow">Asignaciones</p>
+          <h3>Distribuir historias a auditores</h3>
+          <div class="inline-actions">
+            <button class="secondary small" id="assignRandomBtn" type="button">Asignar aleatoriamente</button>
+            <span class="badge muted">Total: <span id="assignmentTotal">0</span></span>
+          </div>
+        </div>
+        <p>Use la muestra calculada para asignar historias con CEX a cada auditor. Ajuste manualmente el auditor por historia desde el desplegable.</p>
+        <div class="assignment-tools">
+          <div class="assignment-summary" id="assignmentSummary"></div>
+          <div class="search-box">
+            <label class="visually-hidden" for="assignmentSearch">Buscar</label>
+            <input
+              type="search"
+              id="assignmentSearch"
+              placeholder="Buscar por paciente, médico, CEX, fecha o centro"
+              aria-label="Buscar historia asignada"
+            />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="assignmentTable">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Centro médico</th>
+                <th>Especialidad</th>
+                <th>Médico</th>
+                <th>CEX / Admisión</th>
+                <th>Historia clínica</th>
+                <th>Paciente</th>
+                <th>Auditor asignado</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </section>
   </main>
-  <footer>
-    <p>© 2025 Auditoría Médica. Proyecto de demostración.</p>
+
+  <div id="auditStartModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+      <div class="modal-card audit-modal">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Auditoría clínica</p>
+            <h3 id="modalTitle">Gestionar auditoría</h3>
+          </div>
+          <button class="icon-btn" id="closeModalBtn" aria-label="Cerrar">×</button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <div class="audit-workspace">
+            <aside class="audit-context frozen">
+              <div class="modal-intro compact">
+                <div id="modalSummary" class="modal-summary dense"></div>
+                <div class="modal-status compact">
+                  <div class="status-inline">
+                    <span class="pill" id="auditStatusModal">Sin iniciar</span>
+                    <span class="badge" id="auditScoreModal">—</span>
+                  </div>
+                  <div class="progress muted-border">
+                    <div id="progressBar" class="progress-bar" style="width:0%"></div>
+                  </div>
+                  <p class="muted small">Autosave activo. Usa los botones rápidos para responder cada criterio.</p>
+                </div>
+              </div>
+            </aside>
+            <div class="audit-main">
+              <div class="section-title inline">
+                <div>
+                  <p class="eyebrow">Formulario</p>
+                  <h4>Evaluación horizontal</h4>
+                  <p class="muted small">Cada fila muestra el criterio y los botones de calificación a la misma altura.</p>
+                </div>
+              </div>
+              <div id="auditForm" class="modal-form"></div>
+              <div class="nonconformity-panel">
+                <div class="panel-header">
+                  <div>
+                    <p class="eyebrow">Hallazgos</p>
+                    <h4>No conformidades</h4>
+                  </div>
+                  <p class="muted small">Se autollenan al marcar "No cumple" y se pueden editar en línea.</p>
+                </div>
+                <div id="nonConformityList" class="nonconformity-list"></div>
+              </div>
+              <div class="actions action-grid compact-actions recommendations-block">
+                <div class="form-group">
+                  <label class="muted" for="auditRecommendations">Recomendaciones</label>
+                  <textarea id="auditRecommendations" rows="3" placeholder="Sugerencias para el médico"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="muted" for="auditComments">Comentarios generales</label>
+                  <textarea id="auditComments" rows="3" placeholder="Notas de la auditoría"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="secondary" id="saveAuditBtn">Guardar borrador y cerrar</button>
+          <button class="primary" id="finalizeAuditBtn">Finalizar y guardar</button>
+        </div>
+      </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 Metrored · Auditoría médica con trazabilidad y minimización de datos.</p>
   </footer>
+  </div>
+
   <script src="main.js"></script>
 </body>
 </html>
