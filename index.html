@@ -4,37 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Auditoría Médica Web</title>
-  <!-- Basic styling -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Auditoría Médica Web</h1>
+  <header class="app-header">
+    <div class="header-main">
+      <div>
+        <h1>Auditoría Médica Web</h1>
+        <p id="sessionState" class="session-state">Sesión activa</p>
+      </div>
+      <div class="user-panel">
+        <div class="user-meta">
+          <span class="user-name" id="userFullName">—</span>
+          <span class="user-role">Rol: <strong id="userRole">—</strong></span>
+          <label class="role-selector">Rol activo
+            <select id="activeRoleSelect">
+              <option value="auditor">Auditor</option>
+              <option value="controller">Controller</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+        </div>
+        <button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
+      </div>
+    </div>
     <nav>
-      <ul>
-        <li><a href="#dashboard" id="nav-dashboard">Dashboard</a></li>
-        <li><a href="#criteria" id="nav-criteria">Criterios</a></li>
-        <li><a href="#audit" id="nav-audit">Auditar</a></li>
-        <li><a href="#admin" id="nav-admin">Admin</a></li>
+      <ul id="navTabs">
+        <li><a href="#dashboard" data-section="dashboard">Dashboard</a></li>
+        <li><a href="#auditoria" data-section="auditoria">Auditoría</a></li>
+        <li><a href="#medicos" data-section="medicos">Médicos</a></li>
+        <li><a href="#admin" data-section="admin">Admin</a></li>
       </ul>
     </nav>
   </header>
+
   <main>
-    <!-- Dashboard Section -->
-    <section id="dashboard" class="section">
+    <!-- Dashboard -->
+    <section id="dashboard" data-section="dashboard" class="section">
       <h2>Dashboard</h2>
+      <p class="lead">Resumen rápido de actividad y volumen de historias clínicas auditables.</p>
       <div class="metrics">
         <div class="metric">
           <h3>Total de atenciones</h3>
           <p id="totalRecords">—</p>
+          <small>Casos disponibles para análisis.</small>
         </div>
         <div class="metric">
           <h3>Especialidades únicas</h3>
           <p id="uniqueSpecialties">—</p>
+          <small>Variedad de servicios incluidos.</small>
         </div>
         <div class="metric">
           <h3>Centros médicos únicos</h3>
           <p id="uniqueCenters">—</p>
+          <small>Distribución entre sedes.</small>
         </div>
       </div>
       <h3>Distribución por especialidad</h3>
@@ -52,60 +75,94 @@
         <tbody></tbody>
       </table>
     </section>
-    <!-- Criteria Section -->
-    <section id="criteria" class="section" style="display:none;">
-      <h2>Criterios de Auditoría</h2>
-      <table id="criteriaTable">
-        <thead>
-          <tr><th>ID</th><th>Nombre</th><th>Descripción</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-    <!-- Audit Section -->
-    <section id="audit" class="section" style="display:none;">
-      <h2>Realizar Auditoría</h2>
-      <div class="form-group">
-        <label for="selectRecord">Seleccione una historia de admisión:</label>
-        <select id="selectRecord"></select>
-      </div>
-      <div id="recordDetails"></div>
-      <form id="auditForm" style="display:none;">
-        <h3>Evaluar Criterios</h3>
-        <div id="criteriaInputs"></div>
-        <div class="form-group">
-          <label for="auditComments">Comentarios / Recomendaciones:</label><br />
-          <textarea id="auditComments" rows="4" cols="50"></textarea>
+
+    <!-- Auditoría -->
+    <section id="auditoria" data-section="auditoria" class="section" style="display:none;">
+      <h2>Auditoría de historias</h2>
+      <div class="audit-grid">
+        <div class="audit-panel">
+          <h3>Selecciona una historia clínica</h3>
+          <div class="form-group">
+            <label for="selectRecord">Historia de admisión</label>
+            <select id="selectRecord"></select>
+          </div>
+          <div id="recordDetails" class="record-details"></div>
         </div>
-        <button type="button" id="saveAuditBtn">Guardar Auditoría</button>
-      </form>
-      <h3>Auditorías Guardadas</h3>
-      <table id="savedAuditsTable">
+        <div class="audit-panel">
+          <h3>Criterios y evaluación</h3>
+          <div id="criteriaListWrapper">
+            <table id="criteriaTable">
+              <thead>
+                <tr><th>ID</th><th>Nombre</th><th>Descripción</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <form id="auditForm" style="display:none;">
+            <h4>Evalúa los criterios</h4>
+            <div id="criteriaInputs" class="criteria-buttons"></div>
+            <div class="form-group">
+              <label for="auditComments">Comentarios / Recomendaciones</label>
+              <textarea id="auditComments" rows="4"></textarea>
+            </div>
+            <button type="button" id="saveAuditBtn">Guardar Auditoría</button>
+          </form>
+        </div>
+      </div>
+      <div class="audit-saved">
+        <h3>Auditorías Guardadas</h3>
+        <table id="savedAuditsTable">
+          <thead>
+            <tr><th>Admisión</th><th>Puntaje</th><th>Fecha</th><th>Acciones</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="exportAuditsBtn" type="button">Exportar Auditorías (JSON)</button>
+      </div>
+    </section>
+
+    <!-- Médicos -->
+    <section id="medicos" data-section="medicos" class="section" style="display:none;">
+      <h2>Panel de médicos</h2>
+      <p class="lead">Ranking operativo de desempeño para seguimiento rápido.</p>
+      <table id="medicosTable">
         <thead>
-          <!-- Table headings for saved audits: admission ID, computed score (puntaje), date, and available actions -->
-          <tr><th>Admisión</th><th>Puntaje</th><th>Fecha</th><th>Acciones</th></tr>
+          <tr><th>Médico</th><th>Especialidad</th><th>Centro</th><th>Score global</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-      <button id="exportAuditsBtn" type="button">Exportar Auditorías (JSON)</button>
     </section>
-    <!-- Admin Section -->
-    <section id="admin" class="section" style="display:none;">
+
+    <!-- Admin -->
+    <section id="admin" data-section="admin" class="section" style="display:none;">
       <h2>Administración</h2>
-      <p>Puede cargar nuevos datos de atenciones o criterios en formato JSON. Los datos se almacenarán localmente en su navegador.</p>
-      <div class="form-group">
-        <label for="uploadArc">Cargar datos de atenciones (arc_data.json):</label>
-        <input type="file" id="uploadArc" accept="application/json" />
-      </div>
-      <div class="form-group">
-        <label for="uploadCriteria">Cargar criterios (criteria.json):</label>
-        <input type="file" id="uploadCriteria" accept="application/json" />
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h3>Gestión de usuarios</h3>
+          <p>Define roles y accesos para auditores, controllers y administradores.</p>
+          <p class="placeholder">(Placeholder) Próximamente podrás agregar, editar o desactivar usuarios.</p>
+        </div>
+        <div class="admin-card">
+          <h3>Carga de datos</h3>
+          <p>Actualiza los catálogos de atenciones y criterios desde archivos JSON.</p>
+          <div class="form-group">
+            <label for="uploadArc">Cargar datos de atenciones (arc_data.json)</label>
+            <input type="file" id="uploadArc" accept="application/json" />
+          </div>
+          <div class="form-group">
+            <label for="uploadCriteria">Cargar criterios (criteria.json)</label>
+            <input type="file" id="uploadCriteria" accept="application/json" />
+          </div>
+        </div>
       </div>
     </section>
   </main>
+
   <footer>
     <p>© 2025 Auditoría Médica. Proyecto de demostración.</p>
   </footer>
+
+  <script src="auth.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
