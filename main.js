@@ -44,6 +44,7 @@ let modalRecord = null;
 let lastCompletedRecord = null;
 let lastReportPdfUrl = null;
 let lastReportFile = null;
+let shouldReturnToCompletion = false;
 let auditFilters = { date: "", center: "all", cex: "" };
 let auditSort = { column: null, direction: "asc" };
 let stratificationResult = null;
@@ -1347,6 +1348,7 @@ function openCompletionModal(record) {
 function closeCompletionModal() {
   const modal = document.getElementById('completionModal');
   if (!modal) return;
+  shouldReturnToCompletion = false;
   modal.classList.add('hidden');
   document.body.classList.remove('modal-open');
 }
@@ -1483,6 +1485,23 @@ function closeReportModal() {
   const modal = document.getElementById('reportModal');
   modal?.classList.add('hidden');
   document.body.classList.remove('modal-open');
+  if (shouldReturnToCompletion && lastCompletedRecord) {
+    openCompletionModal(lastCompletedRecord);
+  }
+  shouldReturnToCompletion = false;
+}
+
+function openReportFromCompletion({ print = false } = {}) {
+  if (!lastCompletedRecord) return;
+  renderAuditReport(lastCompletedRecord);
+  shouldReturnToCompletion = true;
+  const completionModal = document.getElementById('completionModal');
+  completionModal?.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+  openReportModal(lastCompletedRecord);
+  if (print) {
+    setTimeout(printReport, 150);
+  }
 }
 
 async function printReport() {
@@ -1786,7 +1805,7 @@ function enforceSession() {
     roleSelect.value = currentRole;
     roleSelect.disabled = true;
   }
-  if (activeUserLabel) activeUserLabel.textContent = `Sesión activa: ${displayName} (${currentRole})`;
+  if (activeUserLabel) activeUserLabel.textContent = displayName;
   if (roleBadge) roleBadge.textContent = currentRole;
   if (!currentRole) {
     clearSession();
@@ -2386,21 +2405,12 @@ function initAuditModal() {
 
   const completionPrint = document.getElementById('completionPrintBtn');
   if (completionPrint) {
-    completionPrint.addEventListener('click', () => {
-      closeCompletionModal();
-      if (lastCompletedRecord) renderAuditReport(lastCompletedRecord);
-      openReportModal(lastCompletedRecord);
-      setTimeout(printReport, 150);
-    });
+    completionPrint.addEventListener('click', () => openReportFromCompletion({ print: true }));
   }
 
   const completionView = document.getElementById('completionViewBtn');
   if (completionView) {
-    completionView.addEventListener('click', () => {
-      closeCompletionModal();
-      if (lastCompletedRecord) renderAuditReport(lastCompletedRecord);
-      openReportModal(lastCompletedRecord);
-    });
+    completionView.addEventListener('click', () => openReportFromCompletion());
   }
 
   const sendEmailBtn = document.getElementById('sendReportEmailBtn');

@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="auth.js"></script>
   <script>
@@ -41,16 +42,20 @@
         </div>
       </div>
       <div class="session">
-        <div class="role-display">
-          <label for="roleSelect">Rol activo</label>
-          <select id="roleSelect" disabled>
-            <option value="auditor">Auditor</option>
-            <option value="controller">Controller</option>
-            <option value="admin">Admin</option>
-          </select>
-          <p id="activeUserLabel" class="muted">Sesión activa</p>
-          <span class="badge" id="roleBadge">—</span>
-          <button id="logoutBtn" class="text-link">Cerrar sesión</button>
+        <div class="session-info">
+          <div class="session-line">
+            <p id="activeUserLabel" class="session-user muted">Sesión activa</p>
+            <span class="badge" id="roleBadge">—</span>
+            <button id="logoutBtn" class="text-link session-logout">Cerrar sesión</button>
+          </div>
+          <div class="session-line compact-role">
+            <label for="roleSelect" class="sr-only">Rol activo</label>
+            <select id="roleSelect" disabled>
+              <option value="auditor">Auditor</option>
+              <option value="controller">Controller</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
         </div>
       </div>
     </header>
