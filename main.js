@@ -14,6 +14,29 @@ let criteriaList = [];
 // Auditorías guardadas: objeto con clave admisión y valor { respuestas: {criterioId: valor}, comentarios, fecha }
 let audits = {};
 
+// Configuración de navegación por rol
+const ROLE_SECTIONS = {
+  auditor: ['dashboard', 'auditoria'],
+  controller: ['dashboard', 'auditoria', 'medicos'],
+  admin: ['admin'],
+};
+
+const DEFAULT_SECTIONS = {
+  auditor: 'dashboard',
+  controller: 'dashboard',
+  admin: 'admin',
+};
+
+const MEDICOS_DUMMY = [
+  { nombre: 'Dra. Ana Morales', especialidad: 'Cardiología', centro: 'CM Kennedy', score: '92%' },
+  { nombre: 'Dr. Luis Paredes', especialidad: 'Medicina Interna', centro: 'CM Cumbayá', score: '87%' },
+  { nombre: 'Dra. Sofía Salazar', especialidad: 'Pediatría', centro: 'CM Plaza de Toros', score: '90%' },
+  { nombre: 'Dr. Mateo Silva', especialidad: 'Neurología', centro: 'CM Kennedy', score: '85%' },
+];
+
+let allowedSections = [];
+let currentUser = null;
+
 // Cargar datos iniciales desde archivos JSON incluidos en el proyecto
 async function loadInitialData() {
   try {
@@ -112,17 +135,20 @@ function initAuditOptions() {
     opt.textContent = `${r.admision} - ${r.nombres_completos}`;
     select.appendChild(opt);
   });
-  select.addEventListener('change', () => {
-    const idx = select.value;
-    if (idx === '') {
-      document.getElementById('recordDetails').innerHTML = '';
-      document.getElementById('auditForm').style.display = 'none';
-    } else {
-      const record = arcData[idx];
-      displayRecordDetails(record);
-      renderAuditForm(record);
-    }
-  });
+  if (!select.dataset.bound) {
+    select.addEventListener('change', () => {
+      const idx = select.value;
+      if (idx === '') {
+        document.getElementById('recordDetails').innerHTML = '';
+        document.getElementById('auditForm').style.display = 'none';
+      } else {
+        const record = arcData[idx];
+        displayRecordDetails(record);
+        renderAuditForm(record);
+      }
+    });
+    select.dataset.bound = 'true';
+  }
 }
 
 // Mostrar detalles de la historia seleccionada
@@ -150,35 +176,54 @@ function renderAuditForm(record) {
   const form = document.getElementById('auditForm');
   const inputsContainer = document.getElementById('criteriaInputs');
   inputsContainer.innerHTML = '';
-  // Recuperar auditoría previa si existe
   const prev = audits[record.admision] || {};
+
   criteriaList.forEach((c) => {
-    const div = document.createElement('div');
-    div.className = 'form-group';
-    const label = document.createElement('label');
-    label.htmlFor = `crit-${c.id}`;
-    label.textContent = `${c.name}:`;
-    const select = document.createElement('select');
-    select.id = `crit-${c.id}`;
-    select.dataset.critId = c.id;
-    ['--', '1', '0'].forEach((val) => {
-      const opt = document.createElement('option');
-      opt.value = val;
-      opt.textContent = val === '--' ? 'Seleccione' : val === '1' ? 'Cumple (1)' : 'No cumple (0)';
-      select.appendChild(opt);
+    const wrapper = document.createElement('div');
+    wrapper.className = 'criterion-buttons';
+    wrapper.dataset.critId = c.id;
+
+    const label = document.createElement('div');
+    label.className = 'criterion-label';
+    label.textContent = `${c.id} - ${c.name}`;
+    wrapper.appendChild(label);
+
+    const buttonGroup = document.createElement('div');
+    buttonGroup.className = 'button-group';
+
+    const cumpleBtn = document.createElement('button');
+    cumpleBtn.type = 'button';
+    cumpleBtn.textContent = 'Cumple';
+    cumpleBtn.dataset.value = '1';
+
+    const noCumpleBtn = document.createElement('button');
+    noCumpleBtn.type = 'button';
+    noCumpleBtn.textContent = 'No cumple';
+    noCumpleBtn.dataset.value = '0';
+
+    [cumpleBtn, noCumpleBtn].forEach((btn) => {
+      btn.addEventListener('click', () => {
+        wrapper.dataset.response = btn.dataset.value;
+        buttonGroup.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
     });
-    // Prefill if previous
+
+    buttonGroup.appendChild(cumpleBtn);
+    buttonGroup.appendChild(noCumpleBtn);
+    wrapper.appendChild(buttonGroup);
+
     if (prev.respuestas && prev.respuestas[c.id] !== undefined) {
-      select.value = String(prev.respuestas[c.id]);
+      wrapper.dataset.response = String(prev.respuestas[c.id]);
+      const targetBtn = prev.respuestas[c.id] === 1 ? cumpleBtn : noCumpleBtn;
+      targetBtn.classList.add('active');
     }
-    div.appendChild(label);
-    div.appendChild(select);
-    inputsContainer.appendChild(div);
+
+    inputsContainer.appendChild(wrapper);
   });
-  // Comentarios
+
   const comments = document.getElementById('auditComments');
   comments.value = prev.comentarios || '';
-  // Botón Guardar
   document.getElementById('saveAuditBtn').onclick = () => saveAudit(record);
   form.style.display = 'block';
 }
@@ -188,11 +233,11 @@ function saveAudit(record) {
   const respuestas = {};
   let total = 0;
   let answered = 0;
-  criteriaList.forEach((c) => {
-    const select = document.getElementById(`crit-${c.id}`);
-    const val = select.value;
+  document.querySelectorAll('#criteriaInputs .criterion-buttons').forEach((wrapper) => {
+    const val = wrapper.dataset.response;
+    const critId = wrapper.dataset.critId;
     if (val === '1' || val === '0') {
-      respuestas[c.id] = Number(val);
+      respuestas[critId] = Number(val);
       total += Number(val);
       answered += 1;
     }
@@ -209,7 +254,6 @@ function saveAudit(record) {
     fecha: new Date().toISOString(),
     score: score.toFixed(2),
   };
-  // Persistir en localStorage
   localStorage.setItem('audits', JSON.stringify(audits));
   alert('Auditoría guardada correctamente.');
   renderSavedAuditsTable();
@@ -253,6 +297,61 @@ function exportAudits() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// Genera una vista imprimible de las auditorías para guardarlas como PDF desde el navegador.
+function exportAuditsPdf() {
+  const entries = Object.entries(audits);
+  if (entries.length === 0) {
+    alert('No hay auditorías guardadas para exportar.');
+    return;
+  }
+
+  const now = new Date().toLocaleString('es-EC');
+  const rows = entries
+    .map(([admision, data]) => {
+      const fecha = data.fecha ? new Date(data.fecha).toLocaleString('es-EC') : '—';
+      const comentarios = data.comentarios ? data.comentarios.replace(/\n/g, '<br>') : '—';
+      const score = data.score ? `${data.score}%` : '—';
+      return `<tr><td>${admision}</td><td>${score}</td><td>${fecha}</td><td>${comentarios}</td></tr>`;
+    })
+    .join('');
+
+  const printable = window.open('', '_blank');
+  if (!printable) {
+    alert('No se pudo abrir una ventana para generar el PDF.');
+    return;
+  }
+
+  printable.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Auditorías guardadas</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 16px; }
+          h1 { margin-top: 0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+          th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+          th { background: #f0f4fa; }
+        </style>
+      </head>
+      <body>
+        <h1>Auditorías guardadas</h1>
+        <p>Generado: ${now}</p>
+        <table>
+          <thead>
+            <tr><th>Admisión</th><th>Puntaje</th><th>Fecha</th><th>Comentarios</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </body>
+    </html>
+  `);
+  printable.document.close();
+  printable.focus();
+  printable.print();
 }
 
 // Manejar carga de archivos en sección Admin
@@ -303,35 +402,70 @@ function initAdminUploads() {
   });
 }
 
-// Control de navegación: mostrar la sección seleccionada
-function setupNavigation() {
-  const navLinks = document.querySelectorAll('nav a');
-  navLinks.forEach((link) => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = link.getAttribute('href').substring(1);
-      showSection(target);
-    });
+// Pinta tabla estática de médicos para el rol controller.
+function initMedicosTable() {
+  const tbody = document.querySelector('#medicosTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  MEDICOS_DUMMY.forEach((med) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${med.nombre}</td><td>${med.especialidad}</td><td>${med.centro}</td><td>${med.score}</td>`;
+    tbody.appendChild(tr);
   });
 }
 
-function showSection(id) {
-  // Ocultar todas las secciones
-  document.querySelectorAll('main .section').forEach((sec) => {
-    sec.style.display = 'none';
-  });
-  // Quitar clase activa de la navegación
-  document.querySelectorAll('nav a').forEach((link) => {
-    link.classList.remove('active');
-  });
-  // Mostrar sección seleccionada
-  document.getElementById(id).style.display = 'block';
-  // Marcar enlace activo
-  document.querySelector(`nav a[href="#${id}"]`).classList.add('active');
+// Actualiza la cabecera con la información de sesión.
+function hydrateUserPanel(user) {
+  document.getElementById('userFullName').textContent = user.fullName;
+  document.getElementById('userRole').textContent = user.role;
+  const roleSelect = document.getElementById('activeRoleSelect');
+  roleSelect.value = user.role;
+  roleSelect.disabled = true;
+  document.getElementById('sessionState').textContent = 'Sesión activa';
+}
 
-  // Si se navega al módulo de auditorías, refrescar las opciones y auditorías guardadas
-  if (id === 'audit') {
-    // Vuelve a cargar opciones en caso de que los datos hayan cambiado
+// Configura navegación y visibilidad según el rol.
+function initNavigation() {
+  allowedSections = ROLE_SECTIONS[currentUser.role] || [];
+  document.querySelectorAll('nav [data-section]').forEach((link) => {
+    const target = link.dataset.section;
+    const allowed = allowedSections.includes(target);
+    link.parentElement.style.display = allowed ? '' : 'none';
+    const section = document.getElementById(target);
+    if (section) {
+      section.style.display = 'none';
+    }
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToSection(target);
+    });
+  });
+  window.addEventListener('hashchange', navigateFromHash);
+  navigateFromHash();
+}
+
+// Determina la sección destino a partir del hash y las reglas de rol.
+function navigateFromHash() {
+  const requested = window.location.hash.replace('#', '') || DEFAULT_SECTIONS[currentUser.role];
+  navigateToSection(requested);
+}
+
+// Muestra la sección solicitada si está permitida; si no, redirige a la sección por defecto del rol.
+function navigateToSection(sectionId) {
+  const allowed = allowedSections.includes(sectionId);
+  const finalSection = allowed ? sectionId : DEFAULT_SECTIONS[currentUser.role];
+  document.querySelectorAll('main .section').forEach((sec) => {
+    const secId = sec.dataset.section || sec.id;
+    const isTarget = secId === finalSection;
+    sec.style.display = isTarget ? 'block' : 'none';
+  });
+  document.querySelectorAll('nav [data-section]').forEach((link) => {
+    link.classList.toggle('active', link.dataset.section === finalSection);
+  });
+  if (window.location.hash.replace('#', '') !== finalSection) {
+    window.location.hash = `#${finalSection}`;
+  }
+  if (finalSection === 'auditoria') {
     if (Array.isArray(arcData) && arcData.length > 0) {
       initAuditOptions();
     }
@@ -339,13 +473,25 @@ function showSection(id) {
   }
 }
 
+// Asocia botones de sesión.
+function initSessionControls() {
+  const logoutBtn = document.getElementById('logoutBtn');
+  logoutBtn.addEventListener('click', () => {
+    logout();
+    window.location.href = 'login.html';
+  });
+}
+
 // Configurar eventos iniciales
 document.addEventListener('DOMContentLoaded', () => {
-  setupNavigation();
+  currentUser = requireAuth();
+  if (!currentUser) return;
+  hydrateUserPanel(currentUser);
+  initSessionControls();
   initAdminUploads();
-  // Por defecto mostrar dashboard
-  showSection('dashboard');
-  // Botón de exportar auditorías
+  initMedicosTable();
   document.getElementById('exportAuditsBtn').addEventListener('click', exportAudits);
+  document.getElementById('exportAuditsPdfBtn').addEventListener('click', exportAuditsPdf);
   loadInitialData();
+  initNavigation();
 });
