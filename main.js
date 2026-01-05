@@ -600,13 +600,13 @@ const semaforo = (score) => {
 
 async function loadInitialData() {
   try {
-    const arcResp = await fetch('data/arc_data.json');
+    const arcResp = await fetch('http://localhost:3000/api/arc');
     arcData = await arcResp.json();
   } catch (e) {
     console.warn('No se pudo cargar arc_data.json', e);
   }
   try {
-    const critResp = await fetch('data/criteria.json');
+    const critResp = await fetch('http://localhost:3000/api/criteria');
     criteriaList = await critResp.json();
   } catch (e) {
     console.warn('No se pudo cargar criteria.json', e);
