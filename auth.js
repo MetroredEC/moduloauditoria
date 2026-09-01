@@ -123,6 +123,24 @@
     safeStorage.remove(SESSION_KEY);
   }
 
+  // Compatibilidad temporal: los cambios de Codex apuntaban a localhost:3000.
+  // En producción se puede definir window.METRORED_API_BASE_URL antes de cargar main.js.
+  // Si no existe una API pública, se mantienen los JSON locales para no romper GitHub Pages.
+  const originalFetch = global.fetch ? global.fetch.bind(global) : null;
+  if (originalFetch) {
+    global.fetch = (input, init) => {
+      const rawUrl = typeof input === 'string' ? input : input?.url;
+      if (typeof rawUrl === 'string' && rawUrl.startsWith('http://localhost:3000/api/')) {
+        const endpoint = rawUrl.replace('http://localhost:3000', '');
+        const apiBase = (global.METRORED_API_BASE_URL || '').replace(/\/$/, '');
+        if (apiBase) return originalFetch(`${apiBase}${endpoint}`, init);
+        if (endpoint === '/api/arc') return originalFetch('data/arc_data.json', init);
+        if (endpoint === '/api/criteria') return originalFetch('data/criteria.json', init);
+      }
+      return originalFetch(input, init);
+    };
+  }
+
   global.Auth = {
     safeStorage,
     sanitizeUserRecord,
